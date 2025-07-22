@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { SignInButton, SignUpButton } from "@clerk/nextjs";
 
 export default function Home() {
   return (
@@ -20,18 +21,24 @@ export default function Home() {
             Plan, track, and achieve your financial goals with ease. Start
             managing your money today in a simple and intuitive way.
           </p>
-          <a
-            href="/login"
+          <SignInButton className="cursor-pointer"/>
+             <SignUpButton>
+                <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+                 Sign Up
+                </button>
+              </SignUpButton>
+          {/* <a
+            href="/sign-up"
             className="inline-block bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300"
           >
             Sign up
           </a>
           <a
-            href="/login"
+            href="/sign-in"
             className="inline-block bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300"
           >
             Sign in
-          </a>
+          </a> */}
         </div>
       </div>
     </>
