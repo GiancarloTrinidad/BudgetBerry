@@ -1,17 +1,3 @@
-// import BottomBar from "../bottomBar";
-// import { Home, Layers, Plus } from 'lucide-react'; 
-// import Link from 'next/link';
-
-// export default function transactionsPage() {
-//   return (
-//     <div style={{ backgroundColor: '#282828' }} className="min-h-screen bg-black text-white pb-20">
-//       <h1 className="text-3xl font-bold p-4">Transactions</h1>
-//       {/* Content */}
-//       <BottomBar />
-//     </div>
-//   );
-// }
-
 'use client'; // Only needed in App Router
 
 import BottomBar from '../bottomBar'; // Adjust path if necessary
@@ -25,9 +11,12 @@ export default function Transactions() {
 
   return (
     <div style={{ backgroundColor: '#282828' }} className="min-h-screen text-white pb-24 p-4">
-      <h1 className="text-3xl font-bold mb-6">Transactions</h1>
+      <div className="w-full max-w-200 mx-auto mb-6">
+      {/* Header */}
+      <h1 className="text-3xl font-bold mb-4">Transactions</h1>
+      </div>
 
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-4 max-w-200 w-full mx-auto">
         {transactions.map((tx) => (
           <div
             key={tx.id}
