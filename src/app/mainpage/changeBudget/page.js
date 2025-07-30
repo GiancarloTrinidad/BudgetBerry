@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export default function changeBudget() {
+export default function ChangeBudget() {
   const router = useRouter();
   const [budget, setBudget] = useState('');
 
