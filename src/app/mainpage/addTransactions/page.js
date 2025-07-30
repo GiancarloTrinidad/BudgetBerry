@@ -1,18 +1,19 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
-export default function AddTransactions() {
+export default function AddTransactionsPage({ searchParams }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
+  // Local state
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [type, setType] = useState('');
 
+  // Initialize from URL query once (or whenever Next re-provides searchParams)
   useEffect(() => {
-    const selectedCategory = searchParams.get('category');
-    const selectedType = searchParams.get('type');
+    const selectedCategory = searchParams?.category ?? '';
+    const selectedType = searchParams?.type ?? '';
 
     if (selectedCategory) setCategory(selectedCategory);
     if (selectedType) setType(selectedType);
@@ -49,42 +50,40 @@ export default function AddTransactions() {
 
   return (
     <div style={{ backgroundColor: '#282828' }} className="min-h-screen bg-[#1f1f1f] text-white p-4">
-    <div style={{ backgroundColor: '#282828' }} className="min-h-screen bg-[#1f1f1f] text-white p-4 max-w-200 mx-auto w-full">
-      {/* Header */}
-      <div className="flex items-center mb-6">
-        <button onClick={() => router.push('/mainpage/homePage')} className="text-xl mr-2">{`←`}</button>
-        <h1 className="text-xl font-bold">Add Transactions</h1>
-      </div>
+      <div style={{ backgroundColor: '#282828' }} className="min-h-screen bg-[#1f1f1f] text-white p-4 max-w-200 mx-auto w-full">
+        {/* Header */}
+        <div className="flex items-center mb-6">
+          <button onClick={() => router.push('/mainpage/homePage')} className="text-xl mr-2">{`←`}</button>
+          <h1 className="text-xl font-bold">Add Transactions</h1>
+        </div>
 
-      {/* Amount Input */}
-      <div className="text-4xl font-semibold mb-6 border-b border-white pb-2">
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="0.00"
-          className="bg-transparent outline-none w-full text-white"
-        />
-      </div>
+        {/* Amount Input */}
+        <div className="text-4xl font-semibold mb-6 border-b border-white pb-2">
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="0.00"
+            className="bg-transparent outline-none w-full text-white"
+          />
+        </div>
 
-      {/* Category Display Button */}
+        {/* Category + Submit */}
         <div className="flex gap-4 mb-12 mx-auto w-full">
-            {/* Select Category Button */}
-            <button
-                onClick={() => router.push('/mainpage/selectCategory')}
-                className="bg-[#C3C8E3] text-black rounded-xl px-4 py-3 w-1/2 font-semibold"
-            >
-                {category || 'Select Category'}
-            </button>
+          <button
+            onClick={() => router.push('/mainpage/selectCategory')}
+            className="bg-[#C3C8E3] text-black rounded-xl px-4 py-3 w-1/2 font-semibold"
+          >
+            {category || 'Select Category'}
+          </button>
 
-            {/* Add Transaction Button */}
-            <button
-                onClick={handleAdd}
-                className="bg-[#C3C8E3] text-black rounded-xl px-4 py-3 w-1/2 font-semibold"
-            >
-                Add Transaction
-            </button>
-            </div>
+          <button
+            onClick={handleAdd}
+            className="bg-[#C3C8E3] text-black rounded-xl px-4 py-3 w-1/2 font-semibold"
+          >
+            Add Transaction
+          </button>
+        </div>
       </div>
     </div>
   );
