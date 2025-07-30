@@ -16,4 +16,18 @@ function Logo() {
   )
 }
 
+export function LogoMobile() {
+  return (
+    <Link href="/" className="flex items-center gap-2">
+        <Image
+            src="/images/logo.png"
+            alt="BudgetBerry Logo"
+            width={175}
+            height={100}
+            priority
+        />
+    </Link>
+  )
+}
+
 export default Logo

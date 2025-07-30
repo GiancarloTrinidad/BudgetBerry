@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import BottomBar from '../bottomBar'; 
+import BottomBar from '../../../components/Navbar'; 
 import { useRouter } from 'next/navigation';
 
 export default function Home() {

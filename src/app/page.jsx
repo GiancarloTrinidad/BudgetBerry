@@ -5,7 +5,8 @@ import {
   SignInButton, 
   SignUpButton,
   SignedIn,
-  SignedOut
+  SignedOut,
+  UserButton
 } from "@clerk/nextjs";
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -46,6 +47,11 @@ export default function Home() {
           </div>
         </div>
       </SignedOut>
+
+      <SignedIn>
+        <UserButton />
+        amogus
+      </SignedIn>
     </>
   );
 }
