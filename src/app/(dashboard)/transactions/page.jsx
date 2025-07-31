@@ -1,6 +1,6 @@
 'use client'; // Only needed in App Router
 
-import BottomBar from '../bottomBar'; // Adjust path if necessary
+import BottomBar from '../../../components/Navbar'; // Adjust path if necessary
 
 export default function Transactions() {
   const transactions = [
@@ -34,7 +34,6 @@ export default function Transactions() {
         ))}
       </div>
 
-      <BottomBar />
     </div>
   );
 }

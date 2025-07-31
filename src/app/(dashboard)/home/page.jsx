@@ -4,6 +4,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import BottomBar from '../../../components/Navbar'; 
 import { useRouter } from 'next/navigation';
+import { 
+  SignInButton, 
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from "@clerk/nextjs";
 
 export default function Home() {
   const [selectedWallet, setSelectedWallet] = useState(1); // 1 or 2
@@ -31,6 +38,7 @@ export default function Home() {
     selectedWallet === 1 ? wallet1Balance : wallet2Balance;
 
   return (
+    <>
     <div
       style={{ backgroundColor: '#282828' }}
       className="min-h-screen text-white pb-24 p-4"
@@ -104,9 +112,7 @@ export default function Home() {
         {/* Placeholder Graph */}
         <div className="h-24 bg-black"></div>
       </div>
-
-      {/* Bottom Navigation */}
-      <BottomBar />
     </div>
+    </>
   );
 }
