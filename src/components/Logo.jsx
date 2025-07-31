@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-2">
+    <Link href="/home" className="flex items-center gap-2">
         <Image
             src="/images/logo.png"
             alt="BudgetBerry Logo"
@@ -18,7 +18,7 @@ function Logo() {
 
 export function LogoMobile() {
   return (
-    <Link href="/" className="flex items-center gap-2">
+    <Link href="/home" className="flex items-center gap-2">
         <Image
             src="/images/logo.png"
             alt="BudgetBerry Logo"

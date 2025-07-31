@@ -20,7 +20,7 @@ export default function Navbar() {
 }
 
 const items = [
-  { label: "Home", link: "/"},
+  { label: "Home", link: "/home"},
   { label: "Transactions", link: "/transactions"}
 ];
 
