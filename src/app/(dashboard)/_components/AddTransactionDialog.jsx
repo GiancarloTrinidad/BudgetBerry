@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useForm } from 'react-hook-form'
 import { CreateTransactionSchema } from '../../../../schema/transaction'
@@ -15,6 +15,9 @@ import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { Calendar } from '@/components/ui/calendar'
 import { Loader2 } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { CreateTransaction } from '../_actions/transactions'
+import { DateToUTCDate } from '@/lib/helpers'
 
 function AddTransactionDialog({ trigger, type }) {
     const form = useForm({
@@ -25,8 +28,50 @@ function AddTransactionDialog({ trigger, type }) {
         }
     })
 
+    const [open, setOpen] = useState(false)
+
+    const handleCategoryChange = useCallback(
+        (value) => {
+            form.setValue("category", value)
+        },
+        [form]
+    )
+
+    const queryClient = useQueryClient();
+
+    const {mutate, isPending} = useMutation({
+        mutationFn: CreateTransaction,
+        onSuccess: () => {
+            toast.success("Transaction created successfully!", {
+                id: "create-transaction"
+            })
+
+            form.reset({
+                type,
+                description: "",
+                amount: 0,
+                date: new Date(),
+                category: undefined
+            })
+
+            queryClient.invalidateQueries({
+                queryKey: ["overview"]
+            })
+
+            setOpen((prev) => !prev)
+        }
+    })
+
+    const onSubmit = useCallback((values) => {
+        toast.loading("Creating transaction...", {id: "create-transaction"})
+        mutate({
+            ...values,
+            date: DateToUTCDate(values.date)
+        })
+    })
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -35,7 +80,7 @@ function AddTransactionDialog({ trigger, type }) {
             </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
                 {/* Transaction Description */}
                 <FormField 
                     control={form.control}
