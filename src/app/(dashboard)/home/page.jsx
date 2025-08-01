@@ -11,7 +11,6 @@ import {
   SignedOut,
   UserButton
 } from "@clerk/nextjs";
-import { useEffect, useState } from 'react'
 import { prisma } from '@/lib/prisma' // You'll need to set this up
 import { useUser } from '@clerk/nextjs'
 
