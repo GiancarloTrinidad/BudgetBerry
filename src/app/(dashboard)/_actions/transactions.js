@@ -6,79 +6,55 @@ import { CreateTransactionSchema } from "../../../../schema/transaction";
 import { currentUser } from "@clerk/nextjs/server";
 
 export async function CreateTransaction(form) {
-  const parsedBody = CreateTransactionSchema.safeParse(form)
+    const parsedBody = CreateTransactionSchema.safeParse(form);
 
-  if (!parsedBody.success) {
-    throw new Error(parsedBody.error.message)
-  }
-
-  const user = await currentUser()
-  if (!user) {
-    redirect("/")
-  }
-
-  const { amount, category, date, description, type } = parsedBody.data
-  const categoryRow = await prisma.category.findFirst({
-    where: {
-      userId: user.id,
-      name: category
+    if (!parsedBody.success) {
+        throw new Error(parsedBody.error.message);
     }
-  })
 
-  if (!categoryRow) {
-    throw new Error("category not found")
-  }
+    const user = await currentUser();
+    if (!user) {
+        redirect("/");
+    }
 
-  const [incomeSum, expenseSum] = await Promise.all([
-    prisma.transaction.aggregate({
-      where: {userId: user.id, type: "income"},
-      _sum: {amount: true}
-    }),
-    prisma.transaction.aggregate({
-      where: {userId: user.id, type: "expense"},
-      _sum: {amount: true}
-    }),
-  ])
+    const { amount, category, date, description, type, walletId } = parsedBody.data;
 
-  const totalAmount = (incomeSum._sum.amount || 0) - (expenseSum._sum.amount || 0)
+    if (!walletId) {
+        throw new Error("Wallet ID is missing from the transaction data.");
+    }
 
-  await prisma.$transaction([
-    prisma.transaction.create({
-      data: {
-        userId: user.id,
-        amount,
-        date,
-        description: description || "",
-        type,
-        category: categoryRow.name
-      }
-    }),
+    await prisma.$transaction(async (tx) => {
+        await tx.transaction.create({
+            data: {
+                userId: user.id,
+                amount,
+                date,
+                description: description || "",
+                type,
+                category: category,
+                wallet: {
+                    connect: {
+                        id: walletId
+                    }
+                }
+            }
+        });
 
-    // Update Wallet
-    prisma.wallet.upsert({
-      where: {
-        total_budget_userId: {
-          userId: user.id,
-          // totalAmount: ,
-          // budget: 
-        }
-      },
-      create: {
-        userId: user.id,
-        totalAmount,
-        budget: 0,
-        expense: type === "expense" ? amount : 0,
-        income: type === "income" ? amount : 0
-      },
-      update: {
-        totalAmount,
-        expense: {
-          increment: type === "expense" ? amount : 0,
-        },
-        income: {
-          increment: type === "income" ? amount : 0
-        }
-      }
-    })
-  ])
+        await tx.wallet.update({
+            where: {
+                id: walletId,
+            },
+            data: {
+                totalAmount: {
+                    increment: type === 'income' ? amount : -amount,
+                },
+                expense: {
+                    increment: type === "expense" ? amount : 0,
+                },
+                income: {
+                    increment: type === "income" ? amount : 0,
+                }
+            }
+        });
+    });
 }

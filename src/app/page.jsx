@@ -4,25 +4,38 @@ import Head from "next/head";
 import { 
   SignInButton, 
   SignUpButton,
-  SignedIn,
+  // SignedIn,
   SignedOut,
-  UserButton
+  // UserButton, this might be useful for user.
+  useUser
 } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import BerryLogo from "@/components/BerryLogo";
 
 export default function Home() {
-  return (
-    <>
-      <SignedOut>
-        <Head>
-          <title>Welcome to BudgetBerry</title>
-          <meta
-            name="description"
-            content="Take control of your finances with our simple and intuitive budgeting app."
-          />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-        </Head>
+  const router = useRouter();
+  const { isLoaded, isSignedIn } = useUser();
 
+  // Redirect to /home if signed in
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      router.push('/home');
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  return (
+    <main>
+      <Head>
+        <title>Welcome to BudgetBerry</title>
+        <meta
+          name="description"
+          content="Take control of your finances with our simple and intuitive budgeting app."
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
+      <SignedOut>
         <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center px-4">
           <BerryLogo />
           <div className="max-w-2xl text-center mt-8">
@@ -35,19 +48,28 @@ export default function Home() {
               Plan, track, and achieve your financial goals with ease. Start
               managing your money today in a simple and intuitive way.
             </p>
-            <SignInButton className="text-black cursor-pointer px-5"/>
-            <SignUpButton>
-              <button className="bg-[#FE4081] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
-                Sign Up
-              </button>
-            </SignUpButton>
+            <div className="flex gap-4 justify-center">
+              <SignInButton>
+                <button className="bg-white text-gray-800 border border-gray-300 rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton>
+                <button className="bg-[#FE4081] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </div>
           </div>
         </div>
       </SignedOut>
 
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
-    </>
+      {/* Loading state while checking auth status */}
+      {isLoaded && isSignedIn && (
+        <div className="min-h-screen flex items-center justify-center">
+          <p>Redirecting to your dashboard...</p>
+        </div>
+      )}
+    </main>
   );
 }

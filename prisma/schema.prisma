@@ -15,11 +15,17 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Wallet {
-  id String @id
+// MODELS:
 
+model Wallet {
+  id String @id @default(cuid())
+
+  name        String
+  userId      String
   totalAmount Float
   budget      Float
+  expense     Float @default(0)
+  income      Float @default(0)
 
   transactions Transaction[]
 }
@@ -32,6 +38,7 @@ model Transaction {
   userId      String
   amount      Float
   description String
+  date        DateTime
   type        String @default("income")
   category    String
 

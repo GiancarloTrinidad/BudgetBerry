@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -27,6 +27,7 @@ import {
   Heart,
   ChevronsUpDown
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const expenseCategories = [
   { label: 'Groceries', icon: <ShoppingCart className="w-4 h-4 mr-2" />, type: 'expense' },
@@ -45,11 +46,23 @@ const incomeCategories = [
 
 const allCategories = [...expenseCategories, ...incomeCategories];
 
-function CategoryPicker() {
+function CategoryPicker({ value, onChange }) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState('');
+  // const [value, setValue] = useState('');
 
+  // useEffect(() => {
+  //   if (!value) return;
+  //   // If value changes, call onChange callback
+  //   onChange(value)
+  // }, [onChange, value])
+
+    // Find the selected category object using the 'value' prop
   const selectedCategory = allCategories.find((cat) => cat.label === value);
+
+  const handleSelect = useCallback((category) => {
+    onChange(category)
+    setOpen(false)
+  }, [onChange])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -58,7 +71,9 @@ function CategoryPicker() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[220px] justify-between"
+          className={cn("w-[220px] justify-between",
+            !selectedCategory && "text-muted-foreground"
+          )}
         >
           {selectedCategory ? (
             <CategoryRow category={selectedCategory} />
@@ -82,10 +97,7 @@ function CategoryPicker() {
                 <CommandItem
                   key={item.label}
                   value={item.label}
-                  onSelect={() => {
-                    setValue(item.label);
-                    setOpen(false);
-                  }}
+                  onSelect={() => handleSelect(item)}
                   className="flex items-center"
                 >
                   {item.icon}
@@ -95,16 +107,13 @@ function CategoryPicker() {
             </CommandList>
           </CommandGroup>
 
-          <CommandGroup heading="Income">
+          <CommandGroup heading="Incomes">
             <CommandList>
               {incomeCategories.map((item) => (
                 <CommandItem
                   key={item.label}
                   value={item.label}
-                  onSelect={() => {
-                    setValue(item.label);
-                    setOpen(false);
-                  }}
+                  onSelect={() => handleSelect(item)}
                   className="flex items-center"
                 >
                   {item.icon}

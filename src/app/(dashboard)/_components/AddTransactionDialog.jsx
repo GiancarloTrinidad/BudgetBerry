@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useForm } from 'react-hook-form'
 import { CreateTransactionSchema } from '../../../../schema/transaction'
@@ -18,28 +18,41 @@ import { Loader2 } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CreateTransaction } from '../_actions/transactions'
 import { DateToUTCDate } from '@/lib/helpers'
+import { toast } from 'sonner'
 
-function AddTransactionDialog({ trigger, type }) {
+function AddTransactionDialog({ trigger, walletId }) {
     const form = useForm({
         resolver: zodResolver(CreateTransactionSchema),
         defaultValues: {
-            type,
+            description: "",
+            amount: 0,
             date: new Date(),
+            category: undefined,
+            type: undefined,
+            walletId: walletId
         }
     })
 
     const [open, setOpen] = useState(false)
 
+    useEffect(() => {
+        if (walletId) {
+            form.setValue("walletId", walletId, { shouldValidate: true });
+        }
+    }, [walletId, form]);
+
     const handleCategoryChange = useCallback(
-        (value) => {
-            form.setValue("category", value)
+        (category) => {
+            form.setValue("category", category.label)
+            form.setValue("type", category.type)
         },
         [form]
     )
 
     const queryClient = useQueryClient();
 
-    const {mutate, isPending} = useMutation({
+    const { mutate, isPending } = useMutation({
+        mutationKey: ["create-transaction", walletId],
         mutationFn: CreateTransaction,
         onSuccess: () => {
             toast.success("Transaction created successfully!", {
@@ -47,11 +60,12 @@ function AddTransactionDialog({ trigger, type }) {
             })
 
             form.reset({
-                type,
                 description: "",
                 amount: 0,
                 date: new Date(),
-                category: undefined
+                category: undefined,
+                type: undefined,
+                walletId: walletId
             })
 
             queryClient.invalidateQueries({
@@ -59,16 +73,22 @@ function AddTransactionDialog({ trigger, type }) {
             })
 
             setOpen((prev) => !prev)
+        },
+        onError: (error) => {
+            toast.error("Failed to create transaction", {
+                id: "create-transaction",
+                description: error.message
+            })
         }
     })
 
     const onSubmit = useCallback((values) => {
         toast.loading("Creating transaction...", {id: "create-transaction"})
-        mutate({
-            ...values,
-            date: DateToUTCDate(values.date)
-        })
-    })
+            mutate({
+                ...values,
+                date: DateToUTCDate(values.date)
+            })
+    }, [mutate])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -81,7 +101,7 @@ function AddTransactionDialog({ trigger, type }) {
         </DialogHeader>
         <Form {...form}>
             <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-                {/* Transaction Description */}
+                {/* Description Field */}
                 <FormField 
                     control={form.control}
                     name="description"
@@ -89,7 +109,7 @@ function AddTransactionDialog({ trigger, type }) {
                         <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                                <Input defaultValue={""} {...field} />
+                                <Input {...field} />
                             </FormControl>
                             <FormDescription>
                                 Transaction description (optional)
@@ -98,7 +118,7 @@ function AddTransactionDialog({ trigger, type }) {
                     )}
                 />
 
-                {/* Transaction Amount */}
+                {/* Amount Field */}
                 <FormField 
                     control={form.control}
                     name="amount"
@@ -106,7 +126,7 @@ function AddTransactionDialog({ trigger, type }) {
                         <FormItem>
                             <FormLabel>Amount</FormLabel>
                             <FormControl>
-                                <Input defaultValue={0} type="number" {...field} />
+                                <Input type="number" {...field} />
                             </FormControl>
                             <FormDescription>
                                 Transaction amount (required)
@@ -114,7 +134,7 @@ function AddTransactionDialog({ trigger, type }) {
                         </FormItem>
                     )}
                 />
-                
+
                 <div className="flex items-center justify-between gap-2">
                     
                     {/* Category Field */}
@@ -125,7 +145,13 @@ function AddTransactionDialog({ trigger, type }) {
                             <FormItem>
                                 <FormLabel>Category</FormLabel>
                                 <FormControl>
-                                    <CategoryPicker type={type} />
+                                    <CategoryPicker 
+                                        value={field.value}
+                                        onChange={(category) => {
+                                            form.setValue("category", category.label);
+                                            form.setValue("type", category.type);
+                                        }}
+                                    />
                                 </FormControl>
                                 <FormDescription>
                                     Select a category for this transaction
@@ -176,27 +202,28 @@ function AddTransactionDialog({ trigger, type }) {
                         )}
                     />
                 </div>                
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() => {
+                                form.reset();
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                    </DialogClose>
+                    <Button
+                        type="submit"
+                        onClick={form.handleSubmit(onSubmit)}
+                        disabled={isPending}>
+                        {!isPending && "Create"}
+                        {isPending && <Loader2 className="animate-spin" />}
+                    </Button>
+                </DialogFooter>
             </form>
         </Form>
-        <DialogFooter>
-            <DialogClose asChild>
-                <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => {
-                        form.reset();
-                    }}
-                >
-                    Cancel
-                </Button>
-            </DialogClose>
-            <Button 
-                onClick={form.handleSubmit(onSubmit)}
-                disabled={isPending}>
-                {!isPending && "Create"}
-                {isPending && <Loader2 className="animate-spin" />}
-            </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

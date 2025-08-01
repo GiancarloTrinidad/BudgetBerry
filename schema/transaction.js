@@ -9,4 +9,5 @@ export const CreateTransactionSchema = z.object({
         z.literal("income"),
         z.literal("expense")
     ]),
+    walletId: z.string({ required_error: "Wallet ID is required." }),
 })
