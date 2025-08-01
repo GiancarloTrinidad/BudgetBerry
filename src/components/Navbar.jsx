@@ -69,7 +69,7 @@ function MobileNavbar() {
     <div style={{ backgroundColor: '#232532' }} className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full bg-[#1e1e1e] flex justify-between items-center px-9 py-1 max-w-200 mx-auto rounded-full md:hidden">
       
       {/* Home Button */}
-      <Link href="/mainpage/homePage" className="flex flex-col items-center text-white text-xs">
+      <Link href="/home" className="flex flex-col items-center text-white text-xs">
         <Home className="w-8 h-8" />
         Home
       </Link>
@@ -85,7 +85,7 @@ function MobileNavbar() {
       </Link>
 
       {/* Transactions Button */}
-      <Link href="/mainpage/transactionsPage" className="flex flex-col items-center text-white text-xs">
+      <Link href="/transactions" className="flex flex-col items-center text-white text-xs">
         <Layers className="w-8 h-8" />
         Transactions
       </Link>

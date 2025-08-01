@@ -1,39 +1,80 @@
 'use client'; // Only needed in App Router
 
 import BottomBar from '../../../components/Navbar'; // Adjust path if necessary
+import TransactionTable from './_components/TransactionTable';
+import { useState, useEffect } from 'react';
+import { getWallets } from '../_actions/wallets';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { 
+  Select, 
+  SelectTrigger, 
+  SelectValue, 
+  SelectContent, 
+  SelectItem 
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Transactions() {
-  const transactions = [
-    { id: 1, amount: -79.31, label: 'Groceries' },
-    { id: 2, amount: -500.0, label: 'Send Money' },
-    { id: 3, amount: 1000.0, label: 'Loan' },
-  ];
+  const [selectedWalletId, setSelectedWalletId] = useState(null);
+  
+  // Fetch wallets
+  const walletQuery = useQuery({
+    queryKey: ["wallets"],
+    queryFn: async () => {
+      try {
+        return await getWallets();
+      } catch (error) {
+        console.error("Error fetching wallets:", error);
+        toast.error("Failed to load wallets. Please try again.");
+        return [];
+      }
+    }
+  });
+
+  const wallets = walletQuery.data || [];
+
+  // Set initial wallet selection
+  useEffect(() => {
+    if (wallets.length > 0 && !selectedWalletId) {
+      setSelectedWalletId(wallets[0].id);
+    }
+  }, [wallets, selectedWalletId]);
 
   return (
-    <div style={{ backgroundColor: '#282828' }} className="min-h-screen text-white pb-24 p-4">
-      <div className="w-full max-w-200 mx-auto mb-6">
-      {/* Header */}
-      <h1 className="text-3xl font-bold mb-4">Transactions</h1>
-      </div>
-
-      <div className="flex flex-col space-y-4 max-w-200 w-full mx-auto">
-        {transactions.map((tx) => (
-          <div
-            key={tx.id}
-            className="bg-[#C3C8E3] rounded-xl p-4"
-          >
-            <p
-              className={`text-2xl font-bold ${
-                tx.amount < 0 ? 'text-red-600' : 'text-green-500'
-              }`}
-            >
-              {tx.amount < 0 ? `-${Math.abs(tx.amount).toFixed(2)}` : `+${tx.amount.toFixed(2)}`}
-            </p>
-            <p className="text-black font-semibold">{tx.label}</p>
+    <>
+      <div className="border-b bg-card">
+        <div className="container flex flex-wrap items-center justify-between gap-6 py-8">
+          <div>
+            <p className="text-3xl font-bold mx-24">Transactions History</p>
           </div>
-        ))}
+          
+            {/* Wallet Selector */}
+            {walletQuery.isLoading ? (
+              <Skeleton className="w-48 h-10 rounded-md" />
+            ) : (
+              <Select 
+                value={selectedWalletId} 
+                onValueChange={setSelectedWalletId}
+              >
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Select wallet" />
+                </SelectTrigger>
+                <SelectContent>
+                  {wallets.map(wallet => (
+                    <SelectItem key={wallet.id} value={wallet.id}>
+                      {wallet.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+        </div>
       </div>
 
-    </div>
+      <div className="container">
+        <TransactionTable />
+      </div>
+    </>
   );
 }
