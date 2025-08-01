@@ -44,6 +44,10 @@ export default function Home() {
           </div>
         </div>
       </SignedOut>
+
+      <SignedIn>
+        <UserButton />
+      </SignedIn>
     </>
   );
 }
