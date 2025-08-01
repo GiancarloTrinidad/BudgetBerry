@@ -10,30 +10,37 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("POSTGRES_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_URL")
   directUrl = env("DIRECT_URL")
 }
 
-model Wallet {
-  id String @id
+// MODELS:
 
+model Wallet {
+  id String @id @default(cuid())
+
+  name        String
+  userId      String
   totalAmount Float
-  budget Float
+  budget      Float
+  expense     Float @default(0)
+  income      Float @default(0)
 
   transactions Transaction[]
 }
 
 model Transaction {
-  id String @id @default(uuid())
-  wallet Wallet @relation(fields: [walletId], references: [id])
-  walletId String 
-  
-  userId String
-  amount Float
+  id       String @id @default(uuid())
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+  walletId String
+
+  userId      String
+  amount      Float
   description String
-  type String @default("income")
-  category String
+  date        DateTime
+  type        String @default("income")
+  category    String
 
   createdAt DateTime @default(now())
 }

@@ -30,7 +30,7 @@ function DesktopNavbar() {
       <nav className="container flex items-center justify-between px-8">
         <div className="flex h-[80px] min-h-[60px] items-center gap-x-4">
           <Logo />
-          <div className="flex h-full"></div>
+          <div className="flex h-full">
             {items.map((item) => (
               <NavbarItem
                 key={item.label}
@@ -38,6 +38,7 @@ function DesktopNavbar() {
                 label={item.label}
               />
             ))}
+            </div>
         </div>
         <div className="flex items-center gap-2">
           <ModeToggle />
