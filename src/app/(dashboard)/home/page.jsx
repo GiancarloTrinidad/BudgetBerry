@@ -109,7 +109,7 @@ export default function Home() {
                 <h1 className="text-3xl font-bold text-foreground">Your Wallets</h1>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {wallets.map(wallet => (
                   <Card
                     key={wallet.id}
@@ -136,7 +136,38 @@ export default function Home() {
                     </CardContent>
                   </Card>
                 ))}
+              </div> */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[...wallets] // make a copy to avoid mutating original state
+                  .sort((a, b) => a.id.localeCompare(b.id)) // sort by string `id`
+                  .map(wallet => (
+                    <Card
+                      key={wallet.id}
+                      className={cn(
+                        "cursor-pointer transition-all border-2 shadow-sm hover:shadow-md",
+                        {
+                          "border-primary shadow-md": wallet.id === selectedWalletId,
+                          "border-muted": wallet.id !== selectedWalletId,
+                        }
+                      )}
+                      onClick={() => setSelectedWalletId(wallet.id)}
+                    >
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg font-medium">{wallet.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className={cn("text-2xl font-bold", {
+                          "text-primary": wallet.id === selectedWalletId
+                        })}>
+                          {wallet.totalAmount !== null 
+                            ? `₱ ${wallet.totalAmount.toFixed(2)}` 
+                            : '...'}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
               </div>
+
             </section>
           
           {/* Financial Overview */}
