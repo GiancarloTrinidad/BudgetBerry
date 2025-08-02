@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { SignedIn, SignedOut, UserButton, useUser, SignInButton, SignUpButton, currentUser } from "@clerk/nextjs";
 import { TrendingUp } from 'lucide-react';
+import { Plus } from 'lucide-react'; 
 
 export default function Home() {
   const {user, isLoaded} = useUser()
@@ -177,6 +178,18 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <AddTransactionDialog 
+        trigger={
+          <Button
+          aria-label="Add transaction"
+          style={{ backgroundColor: '#C0C5D9' }}
+          className="fixed bottom-0 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-md border-0 z-50 sm:hidden"
+        >
+          <Plus className="w-6 h-6 text-black" />
+        </Button>
+        }
+        walletId={selectedWalletId}
+      />
     </div>
   );
 }

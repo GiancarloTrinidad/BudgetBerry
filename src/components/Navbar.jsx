@@ -75,14 +75,14 @@ function MobileNavbar() {
       </Link>
 
       {/* Center (absolute, pinned to middle) */}
-      <Link
-        href="/mainpage/addTransactions"
+      {/* <Link
+      href="/"
         aria-label="Add transaction"
         style={{ backgroundColor: '#C0C5D9' }}
         className="absolute left-1/2 -translate-x-1/2 -top-0 w-12 h-12 rounded-full flex items-center justify-center shadow-md border-0 z-10"
       >
         <Plus className="w-8 h-8 text-black" />
-      </Link>
+      </Link> */}
 
       {/* Transactions Button */}
       <Link href="/transactions" className="flex flex-col items-center text-white text-xs">
