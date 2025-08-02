@@ -73,7 +73,7 @@ export default function Transactions() {
       </div>
 
       <div className="container">
-        <TransactionTable />
+        <TransactionTable walletId={selectedWalletId} />
       </div>
     </>
   );
