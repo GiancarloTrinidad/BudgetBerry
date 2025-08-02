@@ -13,11 +13,26 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { SignedIn, SignedOut, UserButton, useUser, SignInButton, SignUpButton, currentUser } from "@clerk/nextjs";
 import { TrendingUp } from 'lucide-react';
+import { Plus } from 'lucide-react'; 
+import dynamic from 'next/dynamic';
 
 export default function Home() {
   const {user, isLoaded} = useUser()
   const router = useRouter(); 
   const [selectedWalletId, setSelectedWalletId] = useState(null)
+  const LineChart = dynamic(() => import('../_components/LineChart'), { ssr: false }); //Linechart
+
+  const data = {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        datasets: [
+          {
+            label: 'My Dataset',
+            data: [1000, 2500, 3000, 3500, 4000, 2000, 1750, 1500, 1250, 5000, 6000, 1000],
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+          },
+        ],
+      };
 
   const walletQuery = useQuery({
     queryKey:["wallets"],
@@ -64,6 +79,8 @@ export default function Home() {
             </div>
         );
     }
+
+
 
   return (
     <div className="h-full bg-background ">
@@ -167,16 +184,31 @@ export default function Home() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="h-32 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border flex items-center justify-center">
-                      <p className="text-muted-foreground text-sm">Budget visualization coming soon</p>
+                  <div className="h-64 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border p-4 flex justify-center items-center">
+                    <div className="w-full h-full max-w-xl">
+                      <LineChart chartData={data} />
                     </div>
-                  </CardContent>
+                  </div>
+                </CardContent>
                 </Card>
+
               </section>
             )}
           </div>
         </div>
       </div>
+      <AddTransactionDialog 
+        trigger={
+          <Button
+            aria-label="Add transaction"
+            style={{ backgroundColor: '#C0C5D9' }}
+            className="fixed bottom-0 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full flex items-center justify-center shadow-md border-0 z-50 md:hidden"
+          >
+          <Plus className="w-6 h-6 text-black" />
+        </Button>
+        }
+        walletId={selectedWalletId}
+      />
     </div>
   );
 }
