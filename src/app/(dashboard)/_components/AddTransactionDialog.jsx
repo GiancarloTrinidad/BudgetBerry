@@ -68,9 +68,9 @@ function AddTransactionDialog({ trigger, walletId }) {
                 walletId: walletId
             })
 
-            queryClient.invalidateQueries({
-                queryKey: ["overview"]
-            })
+            queryClient.invalidateQueries({ queryKey: ["overview"] })
+            queryClient.invalidateQueries({ queryKey: ["wallets"] })
+
 
             setOpen((prev) => !prev)
         },
